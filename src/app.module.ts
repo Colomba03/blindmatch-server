@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { TodoModule } from './todo/todo.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Todo } from './todo/entities/todo.entity';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [TypeOrmModule.forRootAsync({
@@ -21,7 +22,7 @@ import { Todo } from './todo/entities/todo.entity';
       synchronize: true,
     }),
     inject: [ConfigService]
-  }), ConfigModule,ConfigModule.forRoot({ envFilePath: ['.env']}), TodoModule],
+  }), ConfigModule,ConfigModule.forRoot({ envFilePath: ['.env']}), TodoModule, UsersModule],
   controllers: [AppController],
   providers: [AppService],
 })
