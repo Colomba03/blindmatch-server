@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Post } from './entities/post.entity';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class PostService {
@@ -25,11 +26,22 @@ export class PostService {
     return this.postRepository.findOneBy({ id });
   }
   
-  update(id: number, updatePostDto: UpdatePostDto) {
-    return this.postRepository.update(id, updatePostDto);
+  async update(id: number, updatePostDto: UpdatePostDto): Promise<Post> {
+    const result = await this.postRepository.update(id, updatePostDto);
+    
+    if (result.affected === 0) {
+      throw new NotFoundException(`Post with ID "${id}" not found`);
+    }
+  
+    return this.findOne(id); 
   }
 
-  remove(id: number) {
-    return this.postRepository.delete(id);
+  async remove(id: number): Promise<void> {
+    const result = await this.postRepository.delete(id);
+  
+    if (result.affected === 0) {
+      throw new NotFoundException(`Post with ID "${id}" not found`);
+    }
+  
   }
 }

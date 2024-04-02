@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { Community } from '../community/community.entity';
-import { User } from '../user/user.entity';
-
+import { Community } from '../../community/entities/community.entity';
+import { User } from '../../user/entities/user.entity';
+  
 @Entity('posts')
 export class Post {
   @PrimaryGeneratedColumn()
