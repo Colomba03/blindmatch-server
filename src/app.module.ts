@@ -7,6 +7,8 @@ import { TodoModule } from './todo/todo.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Todo } from './todo/entities/todo.entity';
 import { PostModule } from './post/post.module';
+import { Post } from './post/entities/post.entity';
+
 
 @Module({
   imports: [TypeOrmModule.forRootAsync({
@@ -18,7 +20,7 @@ import { PostModule } from './post/post.module';
       username: configService.get('DATABASE_USER'),
       password: configService.get('DATABASE_PASSWORD'),
       database: configService.get('DATABASE_NAME'),
-      entities: [Todo],
+      entities: [Todo, Post], 
       synchronize: true,
     }),
     inject: [ConfigService]
