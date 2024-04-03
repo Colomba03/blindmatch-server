@@ -3,9 +3,8 @@ import { PostService } from './post.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Post } from './entities/post.entity';
-import { CreatePostDto } from './dto/create-post.dto';
-import { UpdatePostDto } from './dto/update-post.dto';
-import { DeleteResult, UpdateResult } from 'typeorm';
+import { User } from '../user/entities/user.entity';
+import { Community } from '../community/entities/community.entity';
 
 
 describe('PostService', () => {
@@ -20,80 +19,210 @@ describe('PostService', () => {
           provide: getRepositoryToken(Post),
           useValue: {
             create: jest.fn(),
-            save: jest.fn(),
+            save: jest.fn().mockImplementation((post) => Promise.resolve(post)),
             findOneBy: jest.fn(),
-            update: jest.fn(),
-            delete: jest.fn(),
+            update: jest.fn().mockResolvedValue({ affected: 1 }),
+            delete: jest.fn().mockResolvedValue({ affected: 1 }),
+            find: jest.fn(),
+          },
+        },
+        {
+          provide: getRepositoryToken(User),
+          useValue: {
+            create: jest.fn(),
+            save: jest.fn().mockImplementation((post) => Promise.resolve(post)),
+            findOneBy: jest.fn().mockImplementation(({ id }) => {
+              if (id === 1) {
+                return Promise.resolve({ id: 1, name: 'Test User', email: 'test@example.com' });
+              }
+              return Promise.resolve(null);
+            }),
+            update: jest.fn().mockResolvedValue({ affected: 1 }),
+            delete: jest.fn().mockResolvedValue({ affected: 1 }),
+            find: jest.fn(),
+          },
+        },
+        {
+          provide: getRepositoryToken(Community),
+          useValue: {
+            create: jest.fn(),
+            save: jest.fn().mockImplementation((post) => Promise.resolve(post)),
+            findOneBy: jest.fn().mockImplementation(({ id }) => {
+              if (id === 1) {
+                return Promise.resolve({ id: 1, name: 'Test Community', description: 'A test community' });
+              }
+              return Promise.resolve(null);
+            }),
+            update: jest.fn().mockResolvedValue({ affected: 1 }),
+            delete: jest.fn().mockResolvedValue({ affected: 1 }),
+            find: jest.fn(),
           },
         },
       ],
     }).compile();
-
+  
     service = module.get<PostService>(PostService);
     repository = module.get<Repository<Post>>(getRepositoryToken(Post));
+    
   });
-
-  it('post os defined', () => {
-    expect(service).toBeDefined();
-  });
-
-  it('created a new post correctly', async () => {
-    const createPostDto: CreatePostDto = {
-      communityId: 1,
-      userId: 1,
-      title: 'New Post Title',
-      content: 'New Post Content',
+    
+  it('create a new post successfully', async () => {
+    const postDto = {
+      title: 'Test Title',
+      content: 'Test Content',
+      userId: 1, 
+      communityId: 1, 
     };
-
-    const expectedPost = new Post();
-    expectedPost.community_id = { id: createPostDto.communityId } as any; // Simulate the community relation
-    expectedPost.user_id = { id: createPostDto.userId } as any; // Simulate the user relation
-    expectedPost.title = createPostDto.title;
-    expectedPost.content = createPostDto.content;
-
-    jest.spyOn(repository, 'create').mockImplementation(() => expectedPost);
-    jest.spyOn(repository, 'save').mockResolvedValue(expectedPost);
-
-    await expect(service.create(createPostDto)).resolves.toEqual(expectedPost);
+  
+    const expectedPost = {
+      ...postDto,
+      id: 1, 
+      user_id: { id: postDto.userId } as User, 
+      community_id: postDto.communityId ? { id: postDto.communityId } as Community : null, 
+      createdAt: new Date(), 
+      updatedAt: null, 
+    };
+  
+    jest.spyOn(repository, 'create').mockImplementation(() => expectedPost); 
+    jest.spyOn(repository, 'save').mockResolvedValue(expectedPost); 
+  
+    await expect(service.create(postDto)).resolves.toEqual(expectedPost);
+    expect(repository.create).toHaveBeenCalled(); 
+    expect(repository.save).toHaveBeenCalledWith(expectedPost); 
   });
 
-  // Removed createMany test scenario as it requires implementation specifics not discussed
-
-  it('updated a post correctly', async () => {
-    const updatePostDto: UpdatePostDto = { /* ... */ };
+  it('find a post by id', async () => {
     const postId = 1;
-    const mockUpdateResult: UpdateResult = {
-      affected: 1,
-      raw: [],
-      generatedMaps: [],
-    };
-  
-    jest.spyOn(repository, 'update').mockResolvedValue(mockUpdateResult);
-  
-    const updatedPost: Post = {
+    const expectedPost: Post = {
       id: 1,
-      community_id: { id: 1, name: 'Example Community' } as any, // Assuming a minimal mock of the Community entity
-      user_id: { id: 1, username: 'exampleUser' } as any, // Assuming a minimal mock of the User entity
-      title: 'Example Post Title',
-      content: 'This is example post content.',
-      created_at: new Date(),
-      updated_at: new Date(),
-      // Include any additional properties your Post entity might have
+      title: 'Test Title',
+      content: 'Test Content',
+      user_id: { id: 1, name: 'User Name', username: 'Username', email: 'email@example.com', password: 'hashedPassword', birthdate: new Date(), sex: 'M' } as User,
+      community_id: { id: 1, name: 'Community Name', description: 'Description', created_at: new Date() } as Community,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
-    jest.spyOn(repository, 'findOneBy').mockResolvedValue(updatedPost);
+    jest.spyOn(repository, 'findOneBy').mockResolvedValue(expectedPost);
   
-    await expect(service.update(postId, updatePostDto)).resolves.toEqual(updatedPost);
+    expect(await service.findOne(postId)).toEqual(expectedPost);
+    expect(repository.findOneBy).toHaveBeenCalledWith({ id: postId });
   });
 
-  it('delets a post correctly', async () => {
+  it('update a post successfully', async () => {
     const postId = 1;
-    const mockDeleteResult: DeleteResult = {
-      affected: 1,
-      raw: [],
+    const updateDto = { title: 'Updated Title' };
+    const existingPost: Post = {
+      id: postId,
+      title: 'Old Title',
+      content: 'Existing content',
+      user_id: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
   
-    jest.spyOn(repository, 'delete').mockResolvedValue(mockDeleteResult);
   
-    await expect(service.remove(postId)).resolves.toBeUndefined();
+    jest.spyOn(repository, 'findOneBy').mockResolvedValue(existingPost);
+    
+ 
+    repository.save = jest.fn().mockImplementation((post) => Promise.resolve({ ...post, ...updateDto }));
+    
+    const result = await service.update(postId, updateDto);
+    
+  
+    expect(result).toEqual(expect.objectContaining(updateDto));
+    expect(repository.save).toHaveBeenCalledWith(expect.objectContaining({ id: postId, ...updateDto }));
+    expect(repository.findOneBy).toHaveBeenCalledWith({ id: postId });
   });
+  
+
+  it('delete a post successfully', async () => {
+    const postId = 1;
+    jest.spyOn(repository, 'delete').mockResolvedValue({ affected: 1, raw: [] }); 
+  
+    await service.remove(postId);
+    expect(repository.delete).toHaveBeenCalledWith(postId);
+   
+  });
+
+  
+
+  it('update a non-existent post', async () => {
+    const postId = 999; 
+    const updateDto = { title: 'Updated Title' };
+    jest.spyOn(repository, 'findOneBy').mockResolvedValue(undefined);
+  
+    await expect(service.update(postId, updateDto)).rejects.toThrow();
+  });
+
+
+  it('delete a post successfully', async () => {
+    const postId = 1; // 
+  
+    repository.delete = jest.fn().mockResolvedValue({ affected: 1 });
+  
+    await service.remove(postId);
+  
+    
+    expect(repository.delete).toHaveBeenCalledWith(postId);
+  });
+
+it('not set updated_at on post creation', async () => {
+  const postDto = {
+    title: 'New Post',
+    content: 'Content',
+    userId: 1, 
+    communityId: 1,
+  };
+
+  
+  const expectedPost: Post = {
+    ...postDto,
+    id: 1,
+    user_id: { id: postDto.userId } as User, 
+    community_id: { id: postDto.communityId } as Community, 
+    createdAt: new Date(), 
+    updatedAt: null, 
+  };
+
+  
+  jest.spyOn(repository, 'create').mockImplementation(() => expectedPost); 
+  jest.spyOn(repository, 'save').mockResolvedValue(expectedPost); 
+
+  const result = await service.create(postDto);
+
+  expect(result.updatedAt).toBeNull(); // 
+});
+
+
+  it('return all posts', async () => {
+    
+    const expectedPosts: Post[] = [
+      {
+        id: 1,
+        title: 'Post 1',
+        content: 'Content 1',
+       
+        user_id: { id: 1, name: 'User 1', username: 'user1', email: 'user1@example.com', password: 'pass', birthdate: new Date(), sex: 'X' } as User,
+        community_id: { id: 1, name: 'Community 1', description: 'Desc 1', created_at: new Date() } as Community,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        id: 2,
+        title: 'Post 2',
+        content: 'Content 2',
+        user_id: { id: 1, name: 'User 1', username: 'user1', email: 'user1@example.com', password: 'pass', birthdate: new Date(), sex: 'X' } as User,
+        community_id: { id: 1, name: 'Community 1', description: 'Desc 1', created_at: new Date() } as Community,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ];
+  
+    jest.spyOn(repository, 'find').mockResolvedValue(expectedPosts);
+  
+    await expect(service.findAll()).resolves.toEqual(expectedPosts);
+    expect(repository.find).toHaveBeenCalled();
+  });
+  
+
 });
