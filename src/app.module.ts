@@ -6,6 +6,9 @@ import { AppService } from './app.service';
 import { TodoModule } from './todo/todo.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Todo } from './todo/entities/todo.entity';
+import { PostModule } from './post/post.module';
+import { Post } from './post/entities/post.entity';
+
 
 @Module({
   imports: [TypeOrmModule.forRootAsync({
@@ -17,11 +20,11 @@ import { Todo } from './todo/entities/todo.entity';
       username: configService.get('DATABASE_USER'),
       password: configService.get('DATABASE_PASSWORD'),
       database: configService.get('DATABASE_NAME'),
-      entities: [Todo],
+      entities: [Todo, Post], 
       synchronize: true,
     }),
     inject: [ConfigService]
-  }), ConfigModule,ConfigModule.forRoot({ envFilePath: ['.env']}), TodoModule],
+  }), ConfigModule,ConfigModule.forRoot({ envFilePath: ['.env']}), TodoModule, PostModule],
   controllers: [AppController],
   providers: [AppService],
 })
