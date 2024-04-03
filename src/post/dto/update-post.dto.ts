@@ -1,4 +1,14 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreatePostDto } from './create-post.dto';
+import { IsString, IsOptional,IsNotEmpty } from 'class-validator';
 
-export class UpdatePostDto extends PartialType(CreatePostDto) {}
+
+export class UpdatePostDto {
+    @IsString()
+    @IsNotEmpty()
+    @IsOptional()
+    readonly title?: string;
+  
+    @IsString()
+    @IsNotEmpty()
+    @IsOptional()
+    readonly content?: string;
+  }

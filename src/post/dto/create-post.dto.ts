@@ -1,9 +1,10 @@
-import { IsNotEmpty, IsString, IsInt } from 'class-validator';
+import { IsOptional, IsNotEmpty, IsString, IsInt } from 'class-validator';
 
 export class CreatePostDto {
   @IsInt()
-  @IsNotEmpty()
-  readonly communityId: number; 
+  @IsOptional() 
+  readonly communityId?: number;
+
   @IsInt()
   @IsNotEmpty()
   readonly userId: number; 
