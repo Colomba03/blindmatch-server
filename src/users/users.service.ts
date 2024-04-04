@@ -19,8 +19,16 @@ export class UsersService {
   }
 
   findAll() {
-    return this.userRepository.find();
-  }
+    return this.userRepository.find()
+        .then(users => {
+            console.log('Users:', users); 
+            return users;
+        })
+        .catch(error => {
+            console.error('Error fetching users:', error);
+            throw error; 
+        });
+}
 
   findOne(id: number): Promise<User> {
     return this.userRepository.findOneBy({id});
