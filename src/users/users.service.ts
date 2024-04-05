@@ -1,9 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { NotFoundException } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateResult } from 'typeorm';
+
+
 
 @Injectable()
 export class UsersService {
@@ -30,12 +34,33 @@ export class UsersService {
         });
 }
 
-  findOne(id: number): Promise<User> {
-    return this.userRepository.findOneBy({id});
-  }
+async findOne(id: number): Promise<User> {
+  return this.userRepository.findOne({ where: { id } });
+}
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return this.userRepository.update(id, updateUserDto);
+
+  async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException(`User with ID "${id}" not found.`);
+    }
+
+    // Update the user properties based on the provided DTO
+    if (updateUserDto.username !== undefined) {
+      user.username = updateUserDto.username;
+    }
+    if (updateUserDto.email !== undefined) {
+      user.email = updateUserDto.email;
+    }
+    if (updateUserDto.password !== undefined) {
+      user.password = updateUserDto.password;
+    }
+
+    // Save the updated user entity to the database
+    await this.userRepository.save(user);
+    
+    // Return the updated user
+    return user;
   }
 
   remove(id: number) {
