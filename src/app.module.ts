@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { TodoModule } from './todo/todo.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Todo } from './todo/entities/todo.entity';
+import { InterestModule } from './interest/interest.module';
 import { PostModule } from './post/post.module';
 import { Post } from './post/entities/post.entity';
 import { CommunityModule } from './community/community.module';
@@ -14,6 +15,7 @@ import { UserModule } from './user/user.module';
 import { User } from './user/entities/user.entity';
 import { CommunityMembersModule } from './community_members/community_members.module';
 import { CommunityMember } from './community_members/entities/community_member.entity';
+
 @Module({
   imports: [TypeOrmModule.forRootAsync({
     imports: [ConfigModule],
@@ -28,7 +30,8 @@ import { CommunityMember } from './community_members/entities/community_member.e
       synchronize: true,
     }),
     inject: [ConfigService]
-  }), ConfigModule,ConfigModule.forRoot({ envFilePath: ['.env']}), TodoModule, PostModule, CommunityModule, UserModule, CommunityMembersModule],
+  }), ConfigModule,ConfigModule.forRoot({ envFilePath: ['.env']}), TodoModule, InterestModule],
+  }), ConfigModule,ConfigModule.forRoot({ envFilePath: ['.env']}), TodoModule, InterestModule, PostModule, CommunityModule, UserModule, CommunityMembersModule],
   controllers: [AppController],
   providers: [AppService],
 })
