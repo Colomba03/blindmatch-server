@@ -7,6 +7,14 @@ import { TodoModule } from './todo/todo.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Todo } from './todo/entities/todo.entity';
 import { InterestModule } from './interest/interest.module';
+import { PostModule } from './post/post.module';
+import { Post } from './post/entities/post.entity';
+import { CommunityModule } from './community/community.module';
+import { Community } from './community/entities/community.entity';
+import { UserModule } from './user/user.module';
+import { User } from './user/entities/user.entity';
+import { CommunityMembersModule } from './community_members/community_members.module';
+import { CommunityMember } from './community_members/entities/community_member.entity';
 
 @Module({
   imports: [TypeOrmModule.forRootAsync({
@@ -18,11 +26,12 @@ import { InterestModule } from './interest/interest.module';
       username: configService.get('DATABASE_USER'),
       password: configService.get('DATABASE_PASSWORD'),
       database: configService.get('DATABASE_NAME'),
-      entities: [Todo],
+      entities: [Todo, Post,Community,User,CommunityMember ], 
       synchronize: true,
     }),
     inject: [ConfigService]
   }), ConfigModule,ConfigModule.forRoot({ envFilePath: ['.env']}), TodoModule, InterestModule],
+  }), ConfigModule,ConfigModule.forRoot({ envFilePath: ['.env']}), TodoModule, InterestModule, PostModule, CommunityModule, UserModule, CommunityMembersModule],
   controllers: [AppController],
   providers: [AppService],
 })
