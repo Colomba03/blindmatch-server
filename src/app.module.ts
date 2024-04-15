@@ -11,10 +11,11 @@ import { PostModule } from './post/post.module';
 import { Post } from './post/entities/post.entity';
 import { CommunityModule } from './community/community.module';
 import { Community } from './community/entities/community.entity';
-import { UserModule } from './user/user.module';
-import { User } from './user/entities/user.entity';
+import { UsersModule } from './users/users.module';
+import { User } from './users/entities/user.entity';
 import { CommunityMembersModule } from './community_members/community_members.module';
 import { CommunityMember } from './community_members/entities/community_member.entity';
+
 
 @Module({
   imports: [TypeOrmModule.forRootAsync({
@@ -31,7 +32,7 @@ import { CommunityMember } from './community_members/entities/community_member.e
     }),
     inject: [ConfigService]
   }), ConfigModule,ConfigModule.forRoot({ envFilePath: ['.env']}), TodoModule, InterestModule],
-  }), ConfigModule,ConfigModule.forRoot({ envFilePath: ['.env']}), TodoModule, InterestModule, PostModule, CommunityModule, UserModule, CommunityMembersModule],
+  }), ConfigModule,ConfigModule.forRoot({ envFilePath: ['.env']}), TodoModule, InterestModule, PostModule, CommunityModule, UsersModule, CommunityMembersModule],
   controllers: [AppController],
   providers: [AppService],
 })
