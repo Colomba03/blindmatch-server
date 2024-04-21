@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn,UpdateDateColumn,JoinColumn } from 'typeorm';
 import { Community } from '../../community/entities/community.entity';
-import { User } from '../../user/entities/user.entity';
+import { User } from '../../users/entities/user.entity';
   
 @Entity('posts')
 export class Post {
