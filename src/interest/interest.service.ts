@@ -4,6 +4,7 @@ import { UpdateInterestDto } from './dto/update-interest.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
 import { Interest } from './entities/interest.entity';
+import * as fs from 'fs';
 
 @Injectable()
 export class InterestService {
@@ -66,5 +67,12 @@ export class InterestService {
     const payload = await this.manager.query('delete from interests where id = $1',[id])
     if(!payload) throw new NotFoundException(`Interest with ID ${id} not found.`);
     return `Deleted interest`;
+  }
+
+  async getInterests(){
+    const filePath = '../../BlindMatch/blindmatch-server/data/hobbies.csv';
+    const data = await fs.promises.readFile(filePath, 'utf8');
+    const hobbies = data.split('\n');
+    return hobbies;
   }
 }

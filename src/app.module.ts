@@ -31,7 +31,6 @@ import { CommunityMember } from './community_members/entities/community_member.e
       synchronize: true,
     }),
     inject: [ConfigService]
-  }), ConfigModule,ConfigModule.forRoot({ envFilePath: ['.env']}), TodoModule, InterestModule],
   }), ConfigModule,ConfigModule.forRoot({ envFilePath: ['.env']}), TodoModule, InterestModule, PostModule, CommunityModule, UsersModule, CommunityMembersModule],
   controllers: [AppController],
   providers: [AppService],

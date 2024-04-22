@@ -17,6 +17,11 @@ export class InterestController {
     return this.interestService.findAll();
   }
 
+  @Get('/getHobbies')
+  findHobbies() {
+    return this.interestService.getInterests();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.interestService.findOne(+id);
