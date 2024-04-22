@@ -7,10 +7,6 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors();
   app.useGlobalFilters(new HttpExceptionFilter());
-  const PORT = process.env.PORT || 5000;
-  await app.listen(PORT);
+  await app.listen(process.env.PORT || 3000);
 }
-
-bootstrap().catch((error) => {
-  console.error('Error during Nest application startup', error);
-});
+bootstrap();
