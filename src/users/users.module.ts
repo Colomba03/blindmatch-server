@@ -7,8 +7,13 @@ import { JwtModule } from '@nestjs/jwt';
 
 @Module({
 
-  imports: [TypeOrmModule.forFeature([User]),
-],
+  imports: [
+    TypeOrmModule.forFeature([User]),
+    JwtModule.register({
+      secret: 'blindmatch', 
+      signOptions: { expiresIn: '24h' }, 
+    }),
+  ],
   controllers: [UsersController],
   providers: [UsersService],
   exports: [UsersService],

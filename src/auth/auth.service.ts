@@ -16,14 +16,21 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto): Promise<string> {
-    const { username, password } = loginDto;
-    const user = await this.usersService.findOneByUsername(username);
+    try {
+      const { username, password } = loginDto;
+      const user = await this.usersService.findOneByUsername(username);
 
-    if (!user || user.password !== password) {
-      throw new UnauthorizedException('Invalid username or password');
+      if (!user || user.password !== password) {
+        throw new UnauthorizedException('Invalid username or password');
+      }
+
+      const payload = { username: user.username, sub: user.id };
+      const accessToken = this.jwtService.sign(payload);
+      console.log('Access token generated:', { username: user.username, accessToken });
+      return accessToken;
+    } catch (error) {
+      console.error('Login error:', error.message);
+      throw new UnauthorizedException('Invalid credentials');
     }
-
-    const payload = { username: user.username, sub: user.id };
-    return this.jwtService.sign(payload);
   }
 }

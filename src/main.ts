@@ -8,5 +8,6 @@ async function bootstrap() {
   app.enableCors();
   app.useGlobalFilters(new HttpExceptionFilter());
   const PORT = process.env.PORT || 5000;
-  await app.listen(PORT);
+  await app.listen(3000);
 }
+bootstrap()
