@@ -26,21 +26,26 @@ import { Interest } from './interest/entities/interest.entity';
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         url: configService.get('DATABASE_URL'), 
-        entities: [Todo, Post, Community, User, CommunityMember,Interest],
+        entities: [Todo, Post, Community, User, CommunityMember, Interest],
         synchronize: process.env.NODE_ENV !== 'production',
         ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
       }),
-      inject: [ConfigService],
+      inject: [ConfigService], // Move inject inside TypeOrmModule.forRootAsync
     }),
     ConfigModule.forRoot({
       envFilePath: process.env.NODE_ENV === 'development' ? ['.env'] : undefined,
       ignoreEnvFile: process.env.NODE_ENV === 'production',
     }),
-
-    inject: [ConfigService]
-  }), ConfigModule,ConfigModule.forRoot({ envFilePath: ['.env']}), TodoModule, InterestModule, PostModule, CommunityModule, UsersModule, CommunityMembersModule, AuthModule],
-
+    TodoModule,
+    InterestModule,
+    PostModule,
+    CommunityModule,
+    UsersModule,
+    CommunityMembersModule,
+    AuthModule,
+  ],
   controllers: [AppController],
   providers: [AppService], 
 })
 export class AppModule {}
+
