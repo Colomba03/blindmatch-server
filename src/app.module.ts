@@ -14,7 +14,10 @@ import { Post } from './post/entities/post.entity';
 import { Community } from './community/entities/community.entity';
 import { User } from './users/entities/user.entity';
 import { CommunityMember } from './community_members/entities/community_member.entity';
+import { JwtModule } from '@nestjs/jwt';
+import { AuthModule } from './auth/auth.module';
 import { Interest } from './interest/entities/interest.entity';
+
 
 @Module({
   imports: [
@@ -33,13 +36,10 @@ import { Interest } from './interest/entities/interest.entity';
       envFilePath: process.env.NODE_ENV === 'development' ? ['.env'] : undefined,
       ignoreEnvFile: process.env.NODE_ENV === 'production',
     }),
-    TodoModule,
-    InterestModule,
-    PostModule,
-    CommunityModule,
-    UsersModule,
-    CommunityMembersModule,
-  ],
+
+    inject: [ConfigService]
+  }), ConfigModule,ConfigModule.forRoot({ envFilePath: ['.env']}), TodoModule, InterestModule, PostModule, CommunityModule, UsersModule, CommunityMembersModule, AuthModule],
+
   controllers: [AppController],
   providers: [AppService], 
 })

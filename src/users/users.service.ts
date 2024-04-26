@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { NotFoundException } from '@nestjs/common';
@@ -6,8 +6,7 @@ import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdateResult } from 'typeorm';
-
-
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UsersService {
@@ -15,6 +14,7 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    private jwtService: JwtService,
   ) {}
 
   create(createUserDto: CreateUserDto) {
@@ -37,6 +37,11 @@ export class UsersService {
 async findOne(id: number): Promise<User> {
   return this.userRepository.findOne({ where: { id } });
 }
+
+async findOneByUsername(username: string): Promise<User> {
+  return this.userRepository.findOne({ where: { username } });
+}
+
 
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
@@ -66,4 +71,7 @@ async findOne(id: number): Promise<User> {
   remove(id: number) {
     return this.userRepository.delete(id);
   }
+
+
+
 }
