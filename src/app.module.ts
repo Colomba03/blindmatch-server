@@ -15,7 +15,8 @@ import { UsersModule } from './users/users.module';
 import { User } from './users/entities/user.entity';
 import { CommunityMembersModule } from './community_members/community_members.module';
 import { CommunityMember } from './community_members/entities/community_member.entity';
-
+import { JwtModule } from '@nestjs/jwt';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [TypeOrmModule.forRootAsync({
@@ -31,7 +32,7 @@ import { CommunityMember } from './community_members/entities/community_member.e
       synchronize: true,
     }),
     inject: [ConfigService]
-  }), ConfigModule,ConfigModule.forRoot({ envFilePath: ['.env']}), TodoModule, InterestModule, PostModule, CommunityModule, UsersModule, CommunityMembersModule],
+  }), ConfigModule,ConfigModule.forRoot({ envFilePath: ['.env']}), TodoModule, InterestModule, PostModule, CommunityModule, UsersModule, CommunityMembersModule, AuthModule],
   controllers: [AppController],
   providers: [AppService],
 })
