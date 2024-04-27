@@ -15,7 +15,7 @@ export class AuthService {
     return this.usersService.create(createUserDto);
   }
 
-  async login(loginDto: LoginDto): Promise<string> {
+  async login(loginDto: LoginDto) {
     try {
       const { username, password } = loginDto;
       const user = await this.usersService.findOneByUsername(username);
@@ -27,7 +27,7 @@ export class AuthService {
       const payload = { username: user.username, sub: user.id };
       const accessToken = this.jwtService.sign(payload);
       console.log('Access token generated:', { username: user.username, accessToken });
-      return accessToken;
+      return user.id;
     } catch (error) {
       console.error('Login error:', error.message);
       throw new UnauthorizedException('Invalid credentials');

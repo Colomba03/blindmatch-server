@@ -22,9 +22,9 @@ export class InterestController {
     return this.interestService.getInterests();
   }
 
-  @Get('/selectHobbies/:id')
-  selectHobbies(@Param('id') id: string) {
-    const selected = ['Camping','Cooking','Hiking'];
+  @Post('/selectHobbies/:id')
+  selectHobbies(@Param('id') id: string, @Body() selected: any[]) {
+    // const selected = ['Camping','Cooking','Hiking'];
     return this.interestService.setInterests(+id,selected);
   }
 
