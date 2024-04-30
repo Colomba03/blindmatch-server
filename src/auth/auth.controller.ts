@@ -13,11 +13,11 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(@Body() loginDto: LoginDto): Promise<{ accessToken: string }> {
+  async login(@Body() loginDto: LoginDto) {
     try {
       const accessToken = await this.authService.login(loginDto);
       console.log('Login successful:', { username: loginDto.username, accessToken });
-      return { accessToken };
+      return accessToken;
     } catch (error) {
       console.error('Login failed:', error.message);
       throw new HttpException('Login failed', HttpStatus.UNAUTHORIZED);

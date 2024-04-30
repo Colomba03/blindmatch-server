@@ -75,4 +75,20 @@ export class InterestService {
     const hobbies = data.split('\n');
     return hobbies;
   }
+
+  async setInterests(id: number,selected:any[]){
+    const blocked = [];
+    const payload = await this.manager.query(
+      'insert into user_interests' + 
+      '(user_id,selected,blocked)' + 
+      'values ($1,$2,$3)'
+      ,[
+        id,
+        selected,
+        blocked
+      ]);
+    return payload;
+  }
+
+
 }

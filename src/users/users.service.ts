@@ -15,32 +15,32 @@ export class UsersService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private jwtService: JwtService,
-  ) {}
+  ) { }
 
-  create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto) {
     const user = this.userRepository.create(createUserDto);
     return this.userRepository.save(user);
   }
 
-  findAll() {
+  async findAll() {
     return this.userRepository.find()
-        .then(users => {
-            console.log('Users:', users); 
-            return users;
-        })
-        .catch(error => {
-            console.error('Error fetching users:', error);
-            throw error; 
-        });
-}
+      .then(users => {
+        console.log('Users:', users);
+        return users;
+      })
+      .catch(error => {
+        console.error('Error fetching users:', error);
+        throw error;
+      });
+  }
 
-async findOne(id: number): Promise<User> {
-  return this.userRepository.findOne({ where: { id } });
-}
+  async findOne(id: number): Promise<User> {
+    return this.userRepository.findOne({ where: { id } });
+  }
 
-async findOneByUsername(username: string): Promise<User> {
-  return this.userRepository.findOne({ where: { username } });
-}
+  async findOneByUsername(username: string): Promise<User> {
+    return this.userRepository.findOne({ where: { username } });
+  }
 
 
 
@@ -63,7 +63,7 @@ async findOneByUsername(username: string): Promise<User> {
 
     // Save the updated user entity to the database
     await this.userRepository.save(user);
-    
+
     // Return the updated user
     return user;
   }
