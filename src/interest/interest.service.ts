@@ -71,7 +71,7 @@ export class InterestService {
 
   async getInterests(){
     // const filePath = '../../BlindMatch/blindmatch-server/data/hobbies.csv';
-    const filePath = '../../data/hobbies.csv';
+    const filePath = `https://github.com/Colomba03/blindmatch-server/tree/4a5845476461753d48e0a66eb84782d07b935d2b/data/hobbies.csv` ;
     const data = await fs.promises.readFile(filePath, 'utf8');
     const hobbies = data.split('\n');
     return hobbies;
