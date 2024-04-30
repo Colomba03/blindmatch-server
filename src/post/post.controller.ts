@@ -23,6 +23,16 @@ export class PostController {
     return this.postService.findOne(+id);
   }
 
+  @Get('/relatedPosts/:id')
+  findRelated(@Param('id') id: string) {
+    return this.postService.findAllByInterests(+id);
+  }
+
+  @Get('/matchUsers/:id')
+  matchUsers(@Param('id') id: string) {
+    return this.postService.matchUsers(+id);
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
     return this.postService.update(+id, updatePostDto);

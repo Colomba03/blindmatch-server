@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { Post } from './entities/post.entity';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -14,6 +14,7 @@ export class PostService {
     @InjectRepository(Post) private postRepository: Repository<Post>,
     @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(Community) private communityRepository: Repository<Community>,
+    private manager: EntityManager,
   ) {}
 
   async create(createPostDto: CreatePostDto): Promise<Post> {
@@ -44,12 +45,69 @@ export class PostService {
     return this.postRepository.save(post);
   }
 
-  findAll() {
-    return this.postRepository.find();
+  async findAll() {
+    return await this.postRepository.find();
   }
 
-  findOne(id: number): Promise<Post | undefined> {
-    return this.postRepository.findOneBy({ id });
+  async findAllByInterests(id: number){
+    const posts = await this.findAll();
+    const temp = await this.manager.query('select selected from user_interests where user_id = $1',[id]);
+    const interests = temp[0].selected;
+    const related_posts = [];
+    let added = false;
+    if(posts.length > 0 && interests.length > 0){
+      for (let index = 0; index < posts.length; index++) {
+        // console.log(index);
+        const post = posts[index];
+        const content = post.content.split(' ');
+        added = false;
+        // if(post.id != id)console.log(post.content);
+        for(let j = 0; j < interests.length; j++){
+          // console.log(content.indexOf(interests[j]));
+          if(post.content.toLowerCase().includes(interests[j].toLowerCase())){
+            related_posts.push(post);
+            continue
+          }
+        }
+      }
+    }
+    if(related_posts.length > 0) return related_posts;
+    return 'No related posts found'
+  } 
+
+  async matchUsers(id: number){
+    // const posts = await this.findAll();
+    const interests = await this.manager.query('select distinct p.user_id,selected from user_interests as u,posts as p where p.user_id <> $1 and p.user_id = u.user_id',[id]);
+    const temp = await this.manager.query('select selected from user_interests where user_id = $1',[id]);
+    const user_interests = temp[0].selected;
+    const matches = [];
+    const match_total = user_interests.length;
+    for (let index = 0; index < interests.length; index++) {
+      let match_index = 0;
+      const other_intr = interests[index].selected;
+      console.log(other_intr);
+      for (let j = 0; j < user_interests.length; j++) {
+        const interest = user_interests[j];
+        if(other_intr.includes(interest)){
+          match_index += 1;
+        }
+        
+      }
+      console.log(match_index,match_total);
+      const rating =(match_index/match_total) * 10
+      console.log(rating.toFixed(3));
+      console.log(id,interests[index].user_id);
+      if(rating >= 5){
+        const i = {"user_id":interests[index].user_id,"selected":interests[index].selected,"match_rating":rating.toFixed(3)}
+        matches.push(i);
+      }
+      
+    }
+    return matches
+  }
+
+  async findOne(id: number): Promise<Post | undefined> {
+    return await this.postRepository.findOneBy({ id });
   }
   
   async update(id: number, updatePostDto: UpdatePostDto): Promise<Post> {
