@@ -3,7 +3,7 @@ import { PostService } from './post.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Post } from './entities/post.entity';
-import { User } from '../user/entities/user.entity';
+import { User } from '../users/entities/user.entity';
 import { Community } from '../community/entities/community.entity';
 
 
