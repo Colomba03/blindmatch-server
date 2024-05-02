@@ -71,7 +71,7 @@ export class InterestService {
 
   async getInterests(){
     // const filePath = '../../BlindMatch/blindmatch-server/data/hobbies.csv';
-    const filePath = '../../data/hobbies.csv';
+    const filePath = './data/hobbies.csv' ;
     const data = await fs.promises.readFile(filePath, 'utf8');
     const hobbies = data.split('\n');
     return hobbies;
