@@ -49,8 +49,13 @@ export class PostService {
     return await this.postRepository.find();
   }
 
+  async findAllExept(id:number) {
+    const posts = await this.manager.query('select p.*,username from posts as p, users as u where p.user_id = u.id and p.user_id <> $1',[id]);
+    return posts;
+  }
+
   async findAllByInterests(id: number){
-    const posts = await this.findAll();
+    const posts = await this.manager.query('select p.*,username from posts as p, users as u where p.user_id = u.id and p.user_id <> $1',[id]);
     const temp = await this.manager.query('select selected from user_interests where user_id = $1',[id]);
     const interests = temp[0].selected;
     const related_posts = [];

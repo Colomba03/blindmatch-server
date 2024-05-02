@@ -18,6 +18,11 @@ export class PostController {
     return this.postService.findAll();
   }
 
+  @Get('/except/:id')
+  findAllExcept(@Param('id') id: string) {
+    return this.postService.findAllExept(+id);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.postService.findOne(+id);
