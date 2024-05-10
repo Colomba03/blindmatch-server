@@ -17,6 +17,9 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
+## Hobby/Interest Dataset
+https://www.kaggle.com/datasets/muhadel/hobbies
+
 ### Endpoints
 
 # Posts
@@ -88,6 +91,3 @@ $ npm run test:e2e
 # test coverage
 $ npm run test:cov
 ```
-
-## Hobby/Interest Dataset
-https://www.kaggle.com/datasets/muhadel/hobbies
